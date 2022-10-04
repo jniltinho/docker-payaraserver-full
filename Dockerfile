@@ -7,11 +7,11 @@ FROM azul/zulu-openjdk:8u222
 # 8181: https
 EXPOSE 4848 9009 8080 8181
 
-# Payara version (5.183+)
-ARG PAYARA_VERSION=5.201
+# Payara version (5.2022+)
+ARG PAYARA_VERSION=5.2022.3
 ARG PAYARA_PKG=https://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/${PAYARA_VERSION}/payara-${PAYARA_VERSION}.zip
-ARG PAYARA_SHA1=ea86d69233826b4d35612260ea4e8f81a9b992f2
-ARG TINI_VERSION=v0.18.0
+ARG PAYARA_SHA1=e50b1e4bd6ef235d333f0a007a2f17c4b486cbba
+ARG TINI_VERSION=v0.19.0
 
 # Initialize the configurable environment variables
 ENV HOME_DIR=/opt/payara\
@@ -36,14 +36,10 @@ ENV PATH="${PATH}:${PAYARA_DIR}/bin"
 RUN groupadd -g 1000 payara && \
     useradd -u 1000 -M -s /bin/bash -d ${HOME_DIR} payara -g payara && \
     echo payara:payara | chpasswd && \
-    mkdir -p ${DEPLOY_DIR} && \
-    mkdir -p ${CONFIG_DIR} && \
-    mkdir -p ${SCRIPT_DIR} && \
-    chown -R payara: ${HOME_DIR} && \
+    mkdir -p ${DEPLOY_DIR}; mkdir -p ${SCRIPT_DIR} ${CONFIG_DIR}; chown -R payara: ${HOME_DIR} \
     # Install required packages
-    apt-get update && \
-    apt-get install -y wget unzip && \
-    rm -rf /var/lib/apt/lists/*
+    && apt-get update; apt-get install -y wget unzip \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install tini as minimized init system
 RUN wget --no-verbose -O /tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini && \
