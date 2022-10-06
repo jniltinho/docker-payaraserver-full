@@ -39,13 +39,18 @@ ENV HOME_DIR=/opt/payara\
 ENV PATH="${PATH}:${PAYARA_DIR}/bin"
 
 # Create and set the Payara user and working directory owned by the new user
-RUN groupadd -g 1000 payara && \
-    useradd -u 1000 -M -s /bin/bash -d ${HOME_DIR} payara -g payara && \
-    echo payara:payara | chpasswd && \
+RUN groupadd -g 1000 payara && useradd -u 1000 -M -s /bin/bash -d ${HOME_DIR} payara -g payara && echo payara:payara | chpasswd && \
     mkdir -p ${DEPLOY_DIR}; mkdir -p ${SCRIPT_DIR} ${CONFIG_DIR}; chown -R payara: ${HOME_DIR} \
     # Install required packages
-    && yum install --nogpgcheck -y curl unzip java-11-openjdk-headless \
-    && yum clean all && rm -rf /tmp/yum*
+    && yum install --nogpgcheck -y curl unzip java-11-openjdk-headless && yum clean all && rm -rf /tmp/yum*
+
+
+## https://github.com/ochinchina/supervisord
+COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/local/bin/supervisord
+
+RUN curl -skLO https://github.com/upx/upx/releases/download/v3.96/upx-3.96-amd64_linux.tar.xz \
+    && tar -xf upx-*.tar.xz; mv upx-*/upx /usr/local/bin/; rm -rf upx-3.* \
+    && upx --best --lzma /usr/local/bin/supervisord
 
 # Install tini as minimized init system
 RUN curl -skL -o /tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini && chmod +x /tini
