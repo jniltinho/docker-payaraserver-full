@@ -1,6 +1,7 @@
 FROM rockylinux:8
 
-# docker build --no-cache -t rockylinux-payaraserver-ful .
+# docker build --no-cache -t rockylinux-payaraserver .
+# docker run -d --name payara -p 4848:4848 -p 8080:8080 -p 8181:8181 rockylinux-payaraserver
 
 # Default payara ports to expose
 # 4848: admin console
