@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk:8u222
+FROM rockylinux:8
 
 # Default payara ports to expose
 # 4848: admin console
@@ -38,8 +38,8 @@ RUN groupadd -g 1000 payara && \
     echo payara:payara | chpasswd && \
     mkdir -p ${DEPLOY_DIR}; mkdir -p ${SCRIPT_DIR} ${CONFIG_DIR}; chown -R payara: ${HOME_DIR} \
     # Install required packages
-    && apt-get update; apt-get install -y wget unzip \
-    && rm -rf /var/lib/apt/lists/*
+    && yum install --nogpgcheck -y wget unzip java-11-openjdk-headless \
+    && yum clean all && rm -rf /tmp/yum*
 
 # Install tini as minimized init system
 RUN wget --no-verbose -O /tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini && \
@@ -54,8 +54,7 @@ WORKDIR ${HOME_DIR}
 # Download and unzip the Payara distribution
 RUN wget --no-verbose -O payara.zip ${PAYARA_PKG} && \
     echo "${PAYARA_SHA1} *payara.zip" | sha1sum -c - && \
-    unzip -qq payara.zip -d ./ && \
-    mv payara*/ appserver && \
+    unzip -qq payara.zip -d ./; mv payara*/ appserver && \
     # Configure the password file for configuring Payara
     echo "AS_ADMIN_PASSWORD=\nAS_ADMIN_NEWPASSWORD=${ADMIN_PASSWORD}" > /tmp/tmpfile && \
     echo "AS_ADMIN_PASSWORD=${ADMIN_PASSWORD}" >> ${PASSWORD_FILE} && \
