@@ -56,7 +56,7 @@ RUN wget --no-verbose -O payara.zip ${PAYARA_PKG} && \
     echo "${PAYARA_SHA1} *payara.zip" | sha1sum -c - && \
     unzip -qq payara.zip -d ./; mv payara*/ appserver && \
     # Configure the password file for configuring Payara
-    echo "AS_ADMIN_PASSWORD=\nAS_ADMIN_NEWPASSWORD=${ADMIN_PASSWORD}" > /tmp/tmpfile && \
+    echo -e "AS_ADMIN_PASSWORD=\nAS_ADMIN_NEWPASSWORD=${ADMIN_PASSWORD}" > /tmp/tmpfile && \
     echo "AS_ADMIN_PASSWORD=${ADMIN_PASSWORD}" >> ${PASSWORD_FILE} && \
     # Configure the payara domain
     ${PAYARA_DIR}/bin/asadmin --help ; cat /tmp/tmpfile; echo "${ADMIN_USER} ${PAYARA_DIR}" && \
