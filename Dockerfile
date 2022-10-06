@@ -23,7 +23,7 @@ ENV HOME_DIR=/opt/payara\
     DEPLOY_DIR=/opt/payara/deployments\
     PASSWORD_FILE=/opt/payara/passwordFile\
     # Payara Server Domain options
-    DOMAIN_NAME=production\
+    DOMAIN_NAME=domain1\
     ADMIN_USER=admin\
     ADMIN_PASSWORD=admin \
     # Utility environment variables
