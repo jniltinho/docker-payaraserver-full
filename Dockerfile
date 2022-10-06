@@ -7,14 +7,11 @@ FROM rockylinux:8
 # 9009: debug port (JPDA)
 # 8080: http
 # 8181: https
-
-ENV SHELL /bin/bash
 EXPOSE 4848 9009 8080 8181
 
 # Payara version (5.2022+)
 ARG PAYARA_VERSION=5.2022.3
 ARG PAYARA_PKG=https://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/${PAYARA_VERSION}/payara-${PAYARA_VERSION}.zip
-ARG PAYARA_SHA1=e50b1e4bd6ef235d333f0a007a2f17c4b486cbba
 ARG TINI_VERSION=v0.19.0
 
 # Initialize the configurable environment variables
@@ -53,13 +50,11 @@ WORKDIR ${HOME_DIR}
 
 # Download and unzip the Payara distribution
 RUN wget --no-verbose -O payara.zip ${PAYARA_PKG} && \
-    echo "${PAYARA_SHA1} *payara.zip" | sha1sum -c - && \
     unzip -qq payara.zip -d ./; mv payara*/ appserver && \
     # Configure the password file for configuring Payara
     echo -e "AS_ADMIN_PASSWORD=\nAS_ADMIN_NEWPASSWORD=${ADMIN_PASSWORD}" > /tmp/tmpfile && \
     echo "AS_ADMIN_PASSWORD=${ADMIN_PASSWORD}" >> ${PASSWORD_FILE} && \
     # Configure the payara domain
-    ${PAYARA_DIR}/bin/asadmin --help ; cat /tmp/tmpfile; echo "${ADMIN_USER} ${PAYARA_DIR}" && \
     ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=/tmp/tmpfile change-admin-password && \
     ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PASSWORD_FILE} start-domain ${DOMAIN_NAME} && \
     ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PASSWORD_FILE} enable-secure-admin && \
