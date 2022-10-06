@@ -7,6 +7,8 @@ FROM rockylinux:8
 # 9009: debug port (JPDA)
 # 8080: http
 # 8181: https
+
+ENV SHELL /bin/bash
 EXPOSE 4848 9009 8080 8181
 
 # Payara version (5.2022+)
