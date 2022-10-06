@@ -76,4 +76,5 @@ COPY --chown=payara:payara bin/*.sh ${SCRIPT_DIR}/
 RUN mkdir -p ${SCRIPT_DIR}/init.d && chmod +x ${SCRIPT_DIR}/*
 
 ENTRYPOINT ["/tini", "--"]
-CMD ${SCRIPT_DIR}/entrypoint.sh
+#CMD ${SCRIPT_DIR}/entrypoint.sh
+CMD ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PASSWORD_FILE} start-domain ${DOMAIN_NAME}
