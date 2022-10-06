@@ -69,7 +69,7 @@ RUN curl -skL -o payara.zip ${PAYARA_PKG} && \
     # Cleanup unused files
     rm -rf /tmp/tmpFile payara.zip \
     ${PAYARA_DIR}/glassfish/domains/${DOMAIN_NAME}/osgi-cache ${PAYARA_DIR}/glassfish/domains/${DOMAIN_NAME}/logs \
-    ${PAYARA_DIR}/glassfish/domains/domain1
+    #${PAYARA_DIR}/glassfish/domains/domain1
 
 # Copy across docker scripts
 COPY --chown=payara:payara bin/*.sh ${SCRIPT_DIR}/
