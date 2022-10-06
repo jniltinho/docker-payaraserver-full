@@ -1,5 +1,7 @@
 FROM rockylinux:8
 
+# docker build --no-cache -t rockylinux-payaraserver-ful .
+
 # Default payara ports to expose
 # 4848: admin console
 # 9009: debug port (JPDA)
@@ -42,11 +44,7 @@ RUN groupadd -g 1000 payara && \
     && yum clean all && rm -rf /tmp/yum*
 
 # Install tini as minimized init system
-RUN wget --no-verbose -O /tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini && \
-    wget --no-verbose -O /tini.asc https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini.asc && \
-    gpg --batch --keyserver "hkp://p80.pool.sks-keyservers.net:80" --recv-keys 595E85A6B1B4779EA4DAAEC70B588DFF0527A9B7 && \
-    gpg --batch --verify /tini.asc /tini && \
-    chmod +x /tini
+RUN wget --no-verbose -O /tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini && chmod +x /tini
 
 USER payara
 WORKDIR ${HOME_DIR}
