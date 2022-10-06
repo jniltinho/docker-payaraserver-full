@@ -17,7 +17,6 @@ EXPOSE 4848 9009 8080 8181
 # Payara version (5.2022+)
 ARG PAYARA_VERSION=5.2022.3
 ARG PAYARA_PKG=https://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/${PAYARA_VERSION}/payara-${PAYARA_VERSION}.zip
-ARG TINI_VERSION=v0.19.0
 
 # Initialize the configurable environment variables
 ENV HOME_DIR=/opt/payara\
@@ -52,9 +51,6 @@ RUN curl -skLO https://github.com/upx/upx/releases/download/v3.96/upx-3.96-amd64
     && tar -xf upx-*.tar.xz; mv upx-*/upx /usr/local/bin/; rm -rf upx-3.* \
     && upx --best --lzma /usr/local/bin/supervisord
 
-# Install tini as minimized init system
-RUN curl -skL -o /tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini && chmod +x /tini
-
 USER payara
 WORKDIR ${HOME_DIR}
 
@@ -72,7 +68,6 @@ RUN curl -skL -o payara.zip ${PAYARA_PKG} && unzip -qq payara.zip -d ./; mv paya
     # Cleanup unused files
     rm -rf /tmp/tmpFile payara.zip \
     ${PAYARA_DIR}/glassfish/domains/${DOMAIN_NAME}/osgi-cache ${PAYARA_DIR}/glassfish/domains/${DOMAIN_NAME}/logs
-    #${PAYARA_DIR}/glassfish/domains/domain1
 
 # Copy across docker scripts
 COPY container-files /
