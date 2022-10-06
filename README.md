@@ -4,9 +4,8 @@ Updated repository for Payara Dockerfiles. This repository is for the **Full Pro
 
 # Supported tags and respective `Dockerfile` links
 
--	[`latest`](https://github.com/payara/docker-payaraserver-full/blob/master/Dockerfile)
-  - contains latest released version of Payara Server Full Profile
--	[other tags](https://hub.docker.com/r/payara/server-full/tags/) correspond to past releases of Payara Server Full Profile matched by short version number
+-	[`latest`](https://github.com/jniltinho/docker-payaraserver-full/blob/main/Dockerfile)
+
 
 # Usage
 
@@ -15,7 +14,7 @@ Updated repository for Payara Dockerfiles. This repository is for the **Full Pro
 To boot the default domain with HTTP listener exported on port 8080:
 
 ```
-docker run -p 8080:8080 payara/server-full
+docker run -p 8080:8080 rockylinux-payaraserver
 ```
 
 The Docker container specifies the default entry point, starts the domain `production` in foreground so that Payara Server becomes the main process. The tini tool is used to guarantee that the Payara Server process runs seamlessly as the main docker process.
@@ -34,7 +33,7 @@ Most common default open ports that can be exposed outside of the container:
 To boot and export admin interface on port 4848 (and also the default HTTP listener on port 8080):
 
 ```
-docker run -p 4848:4848 -p 8080:8080 payara/server-full
+docker run -p 4848:4848 -p 8080:8080 rockylinux-payaraserver
 ```
 
 Because Payara Server doesn't allow insecure remote admin connections (outside of a Docker container), the admin interface is secured by default, accessible using HTTPS on the host machine: [https://localhost:4848](https://localhost:4848) The default user and password is `admin`.
@@ -49,7 +48,7 @@ The default Docker entry point will scan the folder `$DEPLOY_DIR` (by default po
 In order to deploy applications, you can mount the `$DEPLOY_DIR` (`/opt/payara/deployments`) folder as a docker volume to a directory, which contains your applications. The following will run Payara Server in the docker and will start applications that exist in the directory `~/payara/apps` on the local file-system:
 
 ```
-docker run -p 8080:8080 -v ~/payara/apps:/opt/payara/deployments payara/server-full
+docker run -p 8080:8080 -v ~/payara/apps:/opt/payara/deployments rockylinux-payaraserver
 ```
 
 In order to build a Docker image that contains your applications and starts them automatically, you can copy the applications into the `$DEPLOY_DIR` directory. and run the resulting docker image instead of the original one.
@@ -65,11 +64,11 @@ COPY myapplication.war $DEPLOY_DIR
 You can now build the Docker image and run the application `myapplication.war` with the following commands:
 
 ```
-docker build -t mycompany/myapplication .
+docker build --no-cache -t rockylinux-payaraserver .
 ```
 
 ```
-docker run -p 8080:8080 mycompany/myapplication
+docker run -p 8080:8080 rockylinux-payaraserver
 ```
 
 ### Remote deployment
@@ -107,7 +106,7 @@ It's possible to run a set of custom asadmin commands during Payara server start
 For example, the following command will execute commands defined in the `/local/path/with/boot/file` directory mounted as a volume:
 
 ```
-docker run -p 8080:8080 -v /local/path/with/boot/file:/config -e POSTBOOT_COMMANDS=/config/post-boot-commands.asadmin payara/server-full
+docker run -p 8080:8080 -v /local/path/with/boot/file:/config -e POSTBOOT_COMMANDS=/config/post-boot-commands.asadmin rockylinux-payaraserver
 ```
 
 Alternatively, the following Dockerfile will build an image which will execute the commands in the `post-boot-commands.asadmin` file:
@@ -118,29 +117,21 @@ FROM payara/server-full
 COPY post-boot-commands.asadmin $POSTBOOT_COMMANDS
 ```
 
-### Execution of custom scripts before server startup
-
-In cases this is not sufficient, you can add your own init scripts to the `${SCRIPT_DIR}`. You need to follow the naming convention: `init_<num>_<text>.sh`, where `<num>` gives you a simple option to run scripts in order. Be aware that the default deploy commands script is using this, too.
-
-If you do not want to create a sub-image, you can also mount a volume to `/opt/payara/scripts/init.d` and each `*.sh` file in there will be executed in standard file order.
-
-**Please note:** you can combine both approaches, but please keep in mind that scripts from `init.d` will run *after* those from subimages!
-
-## The default Docker entry point
-
-The default entry point is [tini](https://github.com/krallin/tini), as the JVM should not run as PID 1. The default `CMD` argument for `tini` runs the
-`bin/entrypoint.sh` script in *exec* mode, which in turn runs the following:
-
-- `${SCRIPT_DIR}/init_1_generate_deploy_commands.sh`. This script outputs deploy commands to the post boot command file located at `$POSTBOOT_COMMANDS` (default `$CONFIG_DIR/post-boot-commands.asadmin`). If the deploy commands are already found in that file, this script does nothing.
-- `${SCRIPT_DIR}/init_*.sh` scripts that you may provide for custom use as waiting or initializing during startup, **before** Glassfish kicks in.
-- `${SCRIPT_DIR}/startInForeground.sh`. This script starts the server in the foreground, in a manner that allows the Payara instance to be controlled by the docker host. The server will run the pre boot commands found in the file at `$PREBOOT_COMMANDS`, as well as the post boot commands found in the file at `$POSTBOOT_COMMANDS`.
-
 ### Testing, browsing and configuring a container instance
 
 For testing or other purposes, you can override the default entrypoint. For example, the following command will start the container at a bash prompt, without starting Payara server. It allows you to browse the image and configure the Payara Server instance as you like:
 
 ```
-docker run -p 8080:8080 -it payara/server-full bash
+docker run -p 8080:8080 -it rockylinux-payaraserver bash
+```
+
+
+### Build Docker
+
+```
+git clone https://github.com/jniltinho/docker-payaraserver-full.git
+cd docker-payaraserver-full
+docker build --no-cache -t rockylinux-payaraserver .
 ```
 
 
@@ -148,9 +139,9 @@ docker run -p 8080:8080 -it payara/server-full bash
 
 Payara Server installation is located in the `/opt/payara` directory. This directory is the default working directory of the docker image. The directory name is deliberately free of any versioning so that any scripts written to work with one version can be seamlessly migrated to the latest docker image.
 
-- Full and Web editions are derived from the OpenJDK 8 images with a Debian Jessie base
-- Micro editions are built on OpenJDK 8 images with an Alpine Linux base to keep image size as small as possible.
+- Full and Web editions are derived from the OpenJDK 11 images with a RockyLinux 8 base
+- Micro editions are built on OpenJDK 11 images with an Alpine Linux base to keep image size as small as possible.
 
-Payara Server is a patched, enhanced and supported application server derived from GlassFish Server Open Source Edition 4.x. Visit [www.payara.fish](http://www.payara.fish) for full 24/7 support and lots of free resources.
+Payara Server is a patched, enhanced and supported application server derived from GlassFish Server Open Source Edition 5.x. Visit [www.payara.fish](http://www.payara.fish) for full 24/7 support and lots of free resources.
 
 Full Payara Server and Payara Micro documentation: [https://docs.payara.fish/](https://docs.payara.fish/)
