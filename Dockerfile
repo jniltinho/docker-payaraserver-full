@@ -39,17 +39,17 @@ RUN groupadd -g 1000 payara && \
     echo payara:payara | chpasswd && \
     mkdir -p ${DEPLOY_DIR}; mkdir -p ${SCRIPT_DIR} ${CONFIG_DIR}; chown -R payara: ${HOME_DIR} \
     # Install required packages
-    && yum install --nogpgcheck -y wget unzip java-11-openjdk-headless \
+    && yum install --nogpgcheck -y curl unzip java-11-openjdk-headless \
     && yum clean all && rm -rf /tmp/yum*
 
 # Install tini as minimized init system
-RUN wget --no-verbose -O /tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini && chmod +x /tini
+RUN curl -skL -o /tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini && chmod +x /tini
 
 USER payara
 WORKDIR ${HOME_DIR}
 
 # Download and unzip the Payara distribution
-RUN wget --no-verbose -O payara.zip ${PAYARA_PKG} && \
+RUN curl -skL -o payara.zip ${PAYARA_PKG} && \
     unzip -qq payara.zip -d ./; mv payara*/ appserver && \
     # Configure the password file for configuring Payara
     echo -e "AS_ADMIN_PASSWORD=\nAS_ADMIN_NEWPASSWORD=${ADMIN_PASSWORD}" > /tmp/tmpfile && \
