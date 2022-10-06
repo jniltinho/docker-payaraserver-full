@@ -132,6 +132,7 @@ docker run -p 8080:8080 -it rockylinux-payaraserver bash
 git clone https://github.com/jniltinho/docker-payaraserver-full.git
 cd docker-payaraserver-full
 docker build --no-cache -t rockylinux-payaraserver .
+docker run -d --name payara -p 4848:4848 -p 8080:8080 -p 8181:8181 rockylinux-payaraserver
 ```
 
 
