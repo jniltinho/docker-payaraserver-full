@@ -2,4 +2,4 @@
 set -e
 set -u
 export TERM=xterm
-log "start server"
+echo "start server: payara"
