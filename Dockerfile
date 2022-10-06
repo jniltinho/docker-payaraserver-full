@@ -70,17 +70,13 @@ RUN wget --no-verbose -O payara.zip ${PAYARA_PKG} && \
     ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PASSWORD_FILE} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.logtoFile=false && \
     ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PASSWORD_FILE} stop-domain ${DOMAIN_NAME} && \
     # Cleanup unused files
-    rm -rf \
-        /tmp/tmpFile \
-        payara.zip \
-        ${PAYARA_DIR}/glassfish/domains/${DOMAIN_NAME}/osgi-cache \
-        ${PAYARA_DIR}/glassfish/domains/${DOMAIN_NAME}/logs \
-        ${PAYARA_DIR}/glassfish/domains/domain1
+    rm -rf /tmp/tmpFile payara.zip \
+    ${PAYARA_DIR}/glassfish/domains/${DOMAIN_NAME}/osgi-cache ${PAYARA_DIR}/glassfish/domains/${DOMAIN_NAME}/logs \
+    ${PAYARA_DIR}/glassfish/domains/domain1
 
 # Copy across docker scripts
 COPY --chown=payara:payara bin/*.sh ${SCRIPT_DIR}/
-RUN mkdir -p ${SCRIPT_DIR}/init.d && \
-    chmod +x ${SCRIPT_DIR}/*
+RUN mkdir -p ${SCRIPT_DIR}/init.d && chmod +x ${SCRIPT_DIR}/*
 
 ENTRYPOINT ["/tini", "--"]
 CMD ${SCRIPT_DIR}/entrypoint.sh
