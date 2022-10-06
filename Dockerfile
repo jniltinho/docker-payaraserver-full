@@ -4,6 +4,7 @@ FROM rockylinux:8
 ## https://www.osradar.com/how-to-install-payara-server-on-ubuntu-18-04/
 ## https://techviewleo.com/install-eclipse-glassfish-on-rocky-linux-centos/
 ## https://www.centlinux.com/2019/05/install-payara-server-5-on-centos-7.html
+## https://www.digitalocean.com/community/tutorials/install-maven-linux-ubuntu
 
 # docker build --no-cache -t rockylinux-payaraserver .
 # docker run -d --name payara -p 4848:4848 -p 8080:8080 -p 8181:8181 rockylinux-payaraserver
