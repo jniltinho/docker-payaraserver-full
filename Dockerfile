@@ -77,7 +77,11 @@ RUN curl -skL -o payara.zip ${PAYARA_PKG} && unzip -qq payara.zip -d ./; mv paya
 # Copy across docker scripts
 COPY --chown=payara:payara bin/*.sh ${SCRIPT_DIR}/
 RUN mkdir -p ${SCRIPT_DIR}/init.d && chmod +x ${SCRIPT_DIR}/*
-
-ENTRYPOINT ["/tini", "--"]
-CMD ${SCRIPT_DIR}/entrypoint.sh
+#ENTRYPOINT ["/tini", "--"]
+#CMD ${SCRIPT_DIR}/entrypoint.sh
 #CMD ["/usr/bin/java", "-jar", "${PAYARA_DIR}/glassfish/lib/client/appserver-cli.jar", "start-domain"]
+
+COPY container-files /
+VOLUME ["/data"]
+ENTRYPOINT ["/config/bootstrap.sh"]
+
