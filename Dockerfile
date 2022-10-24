@@ -43,7 +43,7 @@ ENV PATH="${PATH}:${PAYARA_DIR}/bin"
 RUN groupadd -g 1000 payara; useradd -u 1000 -M -s /bin/bash -d ${HOME_DIR} payara -g payara; echo payara:payara | chpasswd \
     && mkdir -p ${DEPLOY_DIR} ${SCRIPT_DIR} ${CONFIG_DIR}; chown -R payara: ${HOME_DIR} \
     # Install required packages
-    && yum install --nogpgcheck -y curl unzip java-11-openjdk-headless; yum clean all && rm -rf /tmp/yum*
+    && yum install --nogpgcheck -y curl wget unzip java-11-openjdk-headless; yum clean all && rm -rf /tmp/yum*
 
 
 ## https://github.com/ochinchina/supervisord
